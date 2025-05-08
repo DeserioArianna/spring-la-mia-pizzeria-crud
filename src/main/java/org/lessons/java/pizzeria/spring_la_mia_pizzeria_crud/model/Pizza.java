@@ -4,6 +4,7 @@ import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
+import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.NotBlank;
 
 @Entity
@@ -13,13 +14,16 @@ public class Pizza {
     @GeneratedValue
     private Integer id;
 
+    @NotBlank(message = "Il nome è obbligatorio")
     private String nome;
+
     private String descrizione;
 
-    @NotBlank
+    @NotBlank(message = "Devi mettere un URL per l'immagine")
     @Column(nullable = false)
     private String urlFoto;
 
+    @DecimalMin(value = "0.01", message = "Il prezzo deve essere maggiore di 0")
     @Column(nullable = false)
     private double prezzo;
 

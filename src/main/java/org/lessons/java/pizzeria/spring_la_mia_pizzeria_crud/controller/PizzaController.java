@@ -8,12 +8,17 @@ import org.lessons.java.pizzeria.spring_la_mia_pizzeria_crud.repository.PizzaRep
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import jakarta.annotation.PostConstruct;
+import jakarta.validation.Valid;
 
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+
 
 @Controller
 @RequestMapping("/pizzas")
@@ -43,7 +48,7 @@ public class PizzaController {
         }
     }
 
-    @GetMapping("")
+    @GetMapping({"", "/"})
     public String getPizza(Model model) {
 
         // Recupero tutte le pizze
@@ -67,5 +72,54 @@ public class PizzaController {
             return "not-found";
         }
     }
+
+    @GetMapping("/create")
+    public String createPizzaForm(Model model) {
+
+        model.addAttribute("pizza", new Pizza());
+
+        return "create";
+    }
+
+    @PostMapping("/create")
+    public String storePizza(@Valid @ModelAttribute Pizza pizza, BindingResult bindingResult) {
+
+        if (bindingResult.hasErrors()) {
+            return "create";
+        }
+        
+        pizzaRepository.save(pizza);
+
+        return "redirect:/pizzas/";
+    }
+    
+    @GetMapping("/edit/{id}")
+    public String editPizzaForm(@PathVariable Integer id, Model model) {
+
+        model.addAttribute("pizza", pizzaRepository.findById(id).get());
+
+        return "edit";
+    }
+    
+    @PostMapping("/edit/{id}")
+    public String updatePizza(@Valid @ModelAttribute Pizza pizza, BindingResult bindingResult) {
+        
+        if (bindingResult.hasErrors()) {
+            return "edit";
+        }
+        
+        pizzaRepository.save(pizza);
+        
+        return "redirect:/pizzas/";
+    }
+    
+    @PostMapping("/delete/{id}")
+    public String deletePizza(@PathVariable Integer id) {
+        
+        pizzaRepository.deleteById(id);
+
+        return "redirect:/pizzas/";
+    }
+    
 
 }
